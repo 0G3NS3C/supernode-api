@@ -4,10 +4,9 @@ module.exports =[
 		method: 'GET',
 		path: '/ping',
 		controller: 'client.ping',
-		middlewares: ['root.checkDevice'],
+		middlewares: [],
 		access: {
-			role: 0, //<--- 1 for connected user
 			xhr: true,
 		}
-	}
+	},
 ]

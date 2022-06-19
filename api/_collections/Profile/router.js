@@ -39,4 +39,14 @@ module.exports =[
 			xhr: true,
 		}
 	},
+	{
+		name: 'profileJoinFlux',
+		method: 'POST',
+		path: '/join-flux',
+		controller: 'profile.join-flux',
+		middlewares: ['root.checkDevice', 'root.checkSession', 'user.attach', 'profile.attach'],
+		access: {
+			xhr: true,
+		}
+	},
 ]

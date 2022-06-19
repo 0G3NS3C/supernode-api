@@ -37,9 +37,8 @@ module.exports = function ({name, database, object, schema, config }) {
                         console.log(error);
                         reject(error);
                     } else {
-                        entry = new object(entry, schema);
-                        resolve(entry)
-                        // resolve(REGISTER_IN_RAM(entry));
+                        if (object) entry = new object(entry, schema);
+                        resolve(entry);
                     }
                 })
             })
@@ -66,7 +65,7 @@ module.exports = function ({name, database, object, schema, config }) {
                 } else if (!entry) {
                     resolve(false);
                 } else {
-                    entry = new object(entry, schema);
+                    if (object) entry = new object(entry, schema);
                     resolve(entry);
                     // if (GET_FROM_RAM(entry)) { resolve(GET_FROM_RAM(entry)); }
                     // else {
