@@ -41,16 +41,16 @@ class Profile extends CollectionClass {
                 let flux = profileToSend.fluxes[i];
                 flux.mk = await node.collections.flux.manager.decodeMasterkey(flux.mk)
                 try {
-                    // profileToSend.fluxes[i].owner.user.nickname = await OGS.$Collections.user.manager.decodeIndex(flux.owner.user.nickname);
-                    profileToSend.fluxes[i].owner.online = node.sockets._isOnlineProfile(flux.owner.key);
+                    profileToSend.fluxes[i].owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
+                    profileToSend.fluxes[i].owner.online = OGS.$Sockets._isOnlineProfile(flux.owner.key);
                     console.log('user online');
                     console.log(profileToSend.fluxes[i].owner.online);
                     for (let e in flux.clients) {
                         let client = flux.clients[e];
                         if (client.user && client.user.nickname) {
-                            // if (client.user.nickname) {
-                            //     profileToSend.fluxes[i].clients[e].user.nickname = await OGS.$Collections.user.manager.decodeIndex(client.user.nickname);
-                            // }
+                            if (client.user.nickname) {
+                                profileToSend.fluxes[i].clients[e].user.nickname = await node.collections.user.manager.decodeIndex(client.user.nickname);
+                            }
                             profileToSend.fluxes[i].clients[e].online = node.sockets._isOnlineProfile(client.key);
                         }
                     }
@@ -60,7 +60,7 @@ class Profile extends CollectionClass {
             }
 
             profileToSend.id = this.getID();
-            profileToSend.nickname = document.user.nickname;
+            profileToSend.nickname = await node.collections.user.manager.decodeIndex(document.user.nickname);
             delete profileToSend.user;
             // console.log('Profile to send :');
             // console.log(profileToSend);

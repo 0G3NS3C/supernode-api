@@ -48,8 +48,6 @@ module.exports = {
             key = crypto.pbkdf2Sync(key, salt, 2145, 32, 'sha512');
             const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
             decipher.setAuthTag(tag);
-            console.log(secret);
-            console.log(data);
             let decrypted = decipher.update(text, 'binary', 'utf8') + decipher.final('utf8');
             try {
                 decrypted = JSON.parse(decrypted);

@@ -6,7 +6,6 @@ module.exports = async ({ req, res, next }) => {
     if (profileFluxes.length >= 3) return req.respond(false);
     let flux = await node.collections.flux.manager.createEmptyForProfile(req.profile);
     if (flux) {
-        console.log(node.sockets);
         let profileToSend = await req.profile.getObjectToSend();
         let socket = node.sockets._getByProfile(req.profile);
         if (socket) {

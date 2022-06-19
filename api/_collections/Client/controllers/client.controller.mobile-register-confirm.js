@@ -9,10 +9,10 @@ module.exports = async ({ req, res, next }) => {
     if (code) {
         if (code !== payload.code) {
             code = null;
-            req.response.error_add('code', req.print('_registration.invalid_code'));
+            req.response.add_error('code', req.print('_registration.invalid_code'));
         }
     } else {
-        req.response.error_add('code', req.print('_registration.missing_code'));
+        req.response.add_error('code', req.print('_registration.missing_code'));
     }
 
     if (!code) return req.respond(false);
@@ -31,7 +31,7 @@ module.exports = async ({ req, res, next }) => {
     }
     else {
         node.services.error.catch(req, User);
-        req.response.error_add('api', 'something.wrong');
+        req.response.add_error('api', 'something.wrong');
         return req.respond(false);
     }
 }

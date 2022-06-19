@@ -14,7 +14,7 @@ module.exports = async ({ req , res , next }) => {
 
 
     const User = await node.collections.user.manager.findOne({
-        number: payload.number,
+        number: await node.collections.user.manager.encodeIndex(payload.number),
         password: password,
     })
 
