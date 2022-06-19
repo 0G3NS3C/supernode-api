@@ -1,0 +1,53 @@
+{
+	"api": {
+		"invalid_request": "Votre requête est invalide.",
+		"auth_invalid": "Votre mot de passe est incorrecte.",
+		"flood": {
+			"protect": "Impossible de réaliser votre requête."
+		}
+	},
+	"pin":{
+		"invalid": "Le code n'est pas exacte.",
+		"invalidreset": "Votre code OGS a été réinitialisé après 10 tentatives. Votre session a été effacé."
+	},
+	"_registration": {
+		"invalid_phone_number": "Votre numéro de téléphone est incorrecte",
+		"incorrect_payload": "Vos données d'inscription ne sont pas ou plus valides.",
+		"invalid_code": "Le code est invalide.",
+		"missing_code": "Le code est manquant.",
+		"email_invalid": "L'e-mail entré est invalide.",
+		"email_exist": "L'e-mail entré éxiste déjà.",
+		"email_missing": "L'email est manquant.",
+		"nickname_exist": "Ce pseudonyme éxiste déjà.",
+		"nickname_toolong": "Votre pseudonyme est trop long.",
+		"nickname_invalid": "Votre pseudonyme est invalide",
+		"nickname_missing": "Votre pseudonyme est manquant.",
+		"password_tooshort": "Mot de passe trop court",
+		"password_missing": "Mot de passe manquant",
+		"email_invalid": "L'e-mail est invalide.",
+		"email_missing": "L'e-mail est manquant.",
+		"email_exist": "L'e-mail entré éxiste déjà."
+	},
+	"flux": {
+		"invalid_code": "Le code du flux est invalide ou vous ne pouvez le rejoindre."
+	},
+	"_captcha": {
+		"invalid":"Le captcha est invalide ou a expiré"
+	},
+	"_regex": {
+		"email": {
+			"not_valid": "Votre E-mail n'est pas valide.",
+			"already_exist": "L'E-mail indiqué est déjà inscrit."
+		},
+		"nickname": {
+			"not_valid": "Votre pseudonyme n'est pas valide",
+			"already_exist": "Le pseudonyme éxiste déjà, choisissez-en un autre."
+		},
+		"password": {
+			"not_valid" : "Votre mot de passe n'est pas valide",
+			"not_equal": "Vos mots de passes ne correspondent pas"
+		}
+	
+	}
+
+}

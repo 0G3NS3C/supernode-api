@@ -1,0 +1,43 @@
+{
+	"api": {
+		"invalid_request": "Votre requête est invalide.",
+		"auth_invalid": "You password is not valid."
+	},
+	"_registration": {
+		"invalid_phone_number": "You phone number is invalid",
+		"incorrect_payload": "Vos données d'inscription ne sont pas ou plus valides.",
+		"invalid_code": "The code is not correct.",
+		"missing_code": "Code not found.",
+		"email_invalid": "Entered e-mail is invalid.",
+		"email_exist": "Entered e-mail already exist.",
+		"email_missing": "E-mail est missing.",
+		"nickname_exist": "Ths nickname already exist.",
+		"nickname_toolong": "Your nickname is too long.",
+		"nickname_invalid": "Your nickname is invalid.",
+		"nickname_missing": "Your nickname is missing.",
+		"password_tooshort": "Password too short",
+		"password_missing": "Password missing",
+		"email_invalid": "Your e-mail is invalid.",
+		"email_missing": "Your e-mail is missing.",
+		"email_exist": "This e-mail already exist."
+	},
+	"_captcha": {
+		"invalid":"Le captcha est invalide ou a expiré"
+	},
+	"_regex": {
+		"email": {
+			"not_valid": "Votre E-mail n'est pas valide.",
+			"already_exist": "L'E-mail indiqué est déjà inscrit."
+		},
+		"nickname": {
+			"not_valid": "Votre pseudonyme n'est pas valide",
+			"already_exist": "Le pseudonyme éxiste déjà, choisissez-en un autre."
+		},
+		"password": {
+			"not_valid" : "Votre mot de passe n'est pas valide",
+			"not_equal": "Vos mots de passes ne correspondent pas"
+		}
+	
+	}
+
+}
