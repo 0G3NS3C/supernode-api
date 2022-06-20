@@ -2,6 +2,7 @@
 const utils = require('../../security/utils');
 
 	module.exports=  {
+		
 		flood:  {
 
 			/* Security by function timer */
@@ -72,3 +73,20 @@ const utils = require('../../security/utils');
 
 		}
 	}
+
+_verifyOptions = function (options) {
+    if (!options.time || typeof (options.time) !== 'number') {
+        _throwError('No time options setted or is not Number type. options.time is required.');
+        return false;
+    }
+    if (!options.count || typeof (options.count) !== 'number') {
+        _throwError('No Count options setted or is not Number type. options.count is required.');
+        return false;
+    }
+    return true;
+
+},
+
+    _throwError = function (msg) {
+        throw new Error(':: ERROR :: Security.js -> ' + msg)
+    }
