@@ -1,5 +1,11 @@
 
 module.exports =  function middleware_prepareHeader({ req, res, next }) {
+    const X_DEVICE = node.security.tokens['x-device-jwt'];
+    const X_SESSION = node.security.tokens['x-session-jwt'];
+
+    if (req.headers[X_DEVICE.header]) res.setHeader(X_DEVICE.header, req.headers[X_DEVICE.header])
+    if (req.headers[X_SESSION.header]) res.setHeader(X_SESSION.header, req.headers[X_SESSION.header])
+
     if (req.headers) {
         let origin = req.headers.origin || req.headers.host;
         let headers = node.config.headers;

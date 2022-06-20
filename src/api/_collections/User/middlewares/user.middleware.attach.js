@@ -6,9 +6,11 @@ module.exports = async function attach({ req, res, next }) {
       const User = await node.collections.user.manager.findOne({ _id : new ObjectId(req.session.getUserId()) })
       if (User) {
          req.user = User;
-         console.log('user found and attach');
+         next();
       }
-      next();
+      else {
+         return req.respond(false);
+      }
    }
 
 }

@@ -11,7 +11,7 @@ module.exports = async function checkSession({req, res, next}) {
       if (trustedSession) {
          req.session = trustedSession;
          res.set(X_SESSION.header, sessionToken);
-         next();
+         return await next();
       }
       else {
             req.response.add_error('session','untrusted');
