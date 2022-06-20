@@ -1,9 +1,9 @@
-module.exports = async (socket, req, data, node) => {
+module.exports = async (socket, req, data) => {
 
     console.log('GET AUTH');
-    const X_DEVICE = OGS.$Security.tokens['x-device'].header;
-    const X_SESSION = OGS.$Security.tokens['x-session'].header;
-    const X_AUTH = OGS.$Security.tokens['socket-auth'];
+    const X_DEVICE = node.security.tokens['x-device-jwt'].header;
+    const X_SESSION = node.security.tokens['x-session-jwt'];
+    const X_AUTH = node.security.tokens['socket-auth-jwt'];
 
     const deleteSocketAuth = () => {
         socket._send({
@@ -14,24 +14,24 @@ module.exports = async (socket, req, data, node) => {
     console.log(data);
     if (!data.xdevice || !data.xsession) return deleteSocketAuth();
 
-    const xsession = OGS.$Services.crypter.JWT.DECODE(OGS.$Security.tokens[X_SESSION].key, data.xsession);
+    const xsession = node.services.crypter.JWT.DECODE(X_SESSION.key, data.xsession);
     if (xsession.device !== data.xdevice) return deleteSocketAuth();
-    let user = await OGS.$Collections.user.manager.findBySession(xsession);
+    let user = await node.collections.user.manager.findBySession(xsession);
     if (!user) return deleteSocketAuth();
-    let profile = await OGS.$Collections.profile.manager.findByUser(user);
+    let profile = await node.collections.profile.manager.findByUser(user);
     if (!profile) return deleteSocketAuth();
     let auth = {
         socketId: socket.id,
         userId: xsession.userId,
         profileKey: profile.getKey(),
     }
-    OGS.$Sockets._cleanSocket(auth);
-    OGS.$Sockets._registerSocket(socket, auth);
+    node.sockets._cleanSocket(auth);
+    node.sockets._registerSocket(socket, auth);
     socket.profile = profile;
     socket.user = user;
-    socket.auth = OGS.$Services.crypter.JWT.ENCODE(OGS.$Security.tokens[X_AUTH.header].key, auth)
+    socket.auth = node.services.crypter.JWT.ENCODE(X_AUTH.key, auth)
     socket._send({
         type: 'setAuth',
-        data: ws.auth,
+        data: socket.auth,
     })
 }

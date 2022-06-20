@@ -77,40 +77,6 @@ const WebSocketManager = {
         })
 
         return this;
-        // WSSERVER.on('connection', function connection(socket, req) {
-        //     const Socket = new SocketCloud(socket);
-        //     if (!socket.id) {
-        //         socket.id = uuidv4();
-        //         RAM_SOCKETID[socket.id] = socket;
-        //         CONSOLE.DEFAULT('##> SOCKET Connexion.  Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
-        //     }
-
-        //         if (server.config.access > 0) {
-        //             req.url = req.url.replace('/?', '');
-        //             const params = new URLSearchParams(req.url);
-        //             if (!params.xdevice || !params.xsession) _this.disconnectSocket(socket);
-        //         }
-
-        //         prepareSocketFunctions(socket);
-
-        //         socket.on('message', function (message) {
-        //             try {
-        //                 message = JSON.parse(message);
-        //             } catch (e) {
-        //                 return
-        //             }
-        //             if (!message.type) return false;
-        //             if (message.auth) socket.auth = message.auth;
-        //             CONSOLE.DEFAULT('##> Socket [' + socket.id + '] IN -> \x1b[32m ' + message.type + ' \x1b[37m');
-        //             if (server[message.type]) server[message.type](socket, req, message.data);
-        //         })
-
-        //         socket.on('close', function (close) {
-        //             _this._broadcastDisconnect(socket);
-        //             _this._unregisterSocket(socket);
-        //             CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
-        //         })
-        //     })
     },
 
         _registerSocket(socket, auth) {
@@ -149,8 +115,8 @@ const WebSocketManager = {
     },
     _isAuth(socket) {
         if (!socket.auth) return false;
-        const X_AUTH = OGS.$Security.tokens['socket-auth'];
-        let authDecoded = OGS.$Services.crypter.JWT.DECODE(OGS.$Security.tokens[X_AUTH.header].key, socket.auth);
+        const X_AUTH = node.security.tokens['socket-auth-jwt'];
+        let authDecoded = node.services.crypter.JWT.DECODE(X_AUTH.key, socket.auth);
         if (!authDecoded) return false;
         if (authDecoded.socketId !== socket.id) return false;
         return true;
