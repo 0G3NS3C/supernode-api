@@ -49,4 +49,14 @@ module.exports =[
 			xhr: true,
 		}
 	},
+	{
+		name: 'profileGetBase',
+		method: 'POST',
+		path: '/get-base',
+		controller: 'profile.get-base',
+		middlewares: ['root.checkDevice', 'root.checkSession', 'user.attach', 'profile.attach'],
+		access: {
+			xhr: true,
+		}
+	},
 ]
