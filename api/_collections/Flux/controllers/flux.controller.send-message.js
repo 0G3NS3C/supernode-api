@@ -14,9 +14,11 @@ module.exports = async ({ req , res, next}) => {
 
     const isOwner = await Flux.isOwner(req.profile.getKey());
     if (!isOwner) {
+                    console.log('!isowner');
         const isClient = await Flux.isClient(req.profile.getKey());
         if (!isClient) {
-          return  returnMessageInError()
+            console.log('!isclient');
+          return returnMessageInError()
         }
     }
 
@@ -27,14 +29,7 @@ module.exports = async ({ req , res, next}) => {
     await Flux.save();
 
     const socket = node.sockets._getByProfile(req.profile);
-    if (!socket || !socket.isIn(flux)) return returnMessageInError();
-    if (!socket['isAuth'] && !socket.isAuth()) {
-        req.respond({
-            key: 'status',
-            value: Event.status,
-        })
-    }
-    else {
+    if (socket) {
         socket.broadcast(flux, {
             type: 'receiveMessage',
             data: {
@@ -49,7 +44,7 @@ module.exports = async ({ req , res, next}) => {
                     value: 6
                 })
             } else {
-                req.respond({
+                return req.respond({
                     key: 'status',
                     value: Event.status,
                 })
@@ -58,4 +53,12 @@ module.exports = async ({ req , res, next}) => {
             return true;
         })
     }
+    else {
+        return req.respond({
+                key: 'status',
+                value: Event.status,
+            })
+    }
+
+
 }

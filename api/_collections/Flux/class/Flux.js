@@ -117,7 +117,6 @@ class Flux extends CollectionClass {
         }
 
         this.isOwner = async function(ProfileKey) {
-            console.log('IS OWNER');
             await document.populate('owner');
             if (document.owner.key === ProfileKey) return true;
             else return
@@ -126,6 +125,7 @@ class Flux extends CollectionClass {
         this.isClient = async function(ProfileKey) {
             await document.populate('clients','key');
             for (let client of document.clients) {
+                console.log(client.key);
                 if (client.key === ProfileKey) return true;
             }
             return false;
