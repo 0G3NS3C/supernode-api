@@ -4,7 +4,7 @@ module.exports = function (manager) {
         code = node.services.crypter.RESALT.PIN(code);
         let profile = await manager.findOne({
             user: ObjectId(user.getID()),
-            key: code,
+            code: code,
         });
         return profile ? profile : false;
     }

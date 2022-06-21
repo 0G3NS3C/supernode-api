@@ -3,7 +3,8 @@ module.exports = function (manager) {
         code = node.services.crypter.RESALT.PIN(code);
         let profile = await manager.create({
             user: user.getID(),
-            key: code,
+            code: code,
+            key: node.services.utils.randomToken(30),
         });
         return profile ? profile : false;
     }

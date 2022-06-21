@@ -1,30 +1,32 @@
-module.exports = async (ctx) => {
-    const flux = ctx.req.body.flux;
-    const event = ctx.req.body.event;
+module.exports = async ({ req , res, next}) => {
+    const flux = req.body.flux;
+    const event = req.body.event;
 
     const returnMessageInError = () => {
-        return ctx.req.respond({
+        return req.respond({
             key: 'status',
             value: 2
         })
     }
 
     if (!flux || !event) return returnMessageInError();
-    const Flux = await OGS.$Collections.flux.manager.findByKey(flux);
+    const Flux = await node.collections.flux.manager.findByKey(flux);
     if (!Flux) return returnMessageInError();
     const regex = new RegExp('^[\\w-_.]{32}$');
     if (!regex.test(event.key)) return returnMessageInError();
 
     event.timestamp = Date.now();
-    event.originId = ctx.req.profile.getKey();
+    event.originId = req.profile.getKey();
+    console.log('originId');
+    console.log(event.originId);
     const Event = await Flux.addEventClient(event);
     Event.status = 4;
     await Flux.save();
 
-    const socket = OGS.$Sockets._getByProfile(ctx.req.profile);
+    const socket = node.sockets._getByProfile(req.profile);
     if (!socket || !socket.isIn(flux)) return returnMessageInError();
     if (!socket['isAuth'] && !socket.isAuth()) {
-        ctx.req.respond({
+        req.respond({
             key: 'status',
             value: Event.status,
         })
@@ -39,12 +41,12 @@ module.exports = async (ctx) => {
         }, async (broadcasted) => {
             if (broadcasted) {
                 Event.status = 6;
-                ctx.req.respond({
+                req.respond({
                     key: 'status',
                     value: 6
                 })
             } else {
-                ctx.req.respond({
+                req.respond({
                     key: 'status',
                     value: Event.status,
                 })

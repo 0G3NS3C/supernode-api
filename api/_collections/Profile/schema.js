@@ -9,6 +9,11 @@ module.exports = {
 	key: {
 		type: String,
 		required: true,
+		unique: true,
+	},
+	code: {
+		type: String,
+		required: true,
 	},
 	aes: {
 		type: String,
