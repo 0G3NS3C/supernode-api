@@ -37,7 +37,7 @@ module.exports = {
 
         DECODE(secret, data) {
             if (!secret.key || !secret.iv || !secret.salt || !data) {
-                throw "Crypter.js: INTERNAL.DECDDE invalide secret token or data structure."
+                throw "Crypter.js: INTERNAL.DECODE invalide secret token or data structure."
             }
             let key = secret.key;
             let iv = secret.iv;

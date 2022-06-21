@@ -1,8 +1,6 @@
 module.exports = async ({ req , res, next }) => {
-    console.log('JOIN FLUX');
     let code = req.body.code;
     if (!code || code === '' || code === 'null' || !req.profile) return req.respond(false);
-    console.log('il y a un code');
     let Flux = await node.collections.flux.manager.findByCode(code, req.profile);
     if (Flux) {
         await Flux.deleteInviteKey();
