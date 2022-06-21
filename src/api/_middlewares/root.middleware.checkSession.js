@@ -14,13 +14,15 @@ module.exports = async function checkSession({req, res, next}) {
          return await next();
       }
       else {
+            res.set(X_SESSION.header, null);
             req.response.add_error('session','untrusted');
-            return req.respond(false);   
+            return await next(); 
       }
    }
    else {
+      res.set(X_SESSION.header, null);
       req.response.add_error('session','untrusted');
-      return req.respond(false);
+      return await next();
    }
 }
 

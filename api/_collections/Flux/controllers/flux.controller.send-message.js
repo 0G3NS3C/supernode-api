@@ -17,8 +17,6 @@ module.exports = async ({ req , res, next}) => {
 
     event.timestamp = Date.now();
     event.originId = req.profile.getKey();
-    console.log('originId');
-    console.log(event.originId);
     const Event = await Flux.addEventClient(event);
     Event.status = 4;
     await Flux.save();

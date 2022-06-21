@@ -10,6 +10,8 @@ module.exports = async function attach({ req, res, next }) {
       else {
          return req.respond(false);
       }
+   } else {
+      return req.respond(false);
    }
 
 }

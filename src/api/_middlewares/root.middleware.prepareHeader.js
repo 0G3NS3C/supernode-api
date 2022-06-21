@@ -1,9 +1,10 @@
 
 module.exports =  function middleware_prepareHeader({ req, res, next }) {
-    const X_DEVICE = node.security.tokens['x-device-jwt'];
-    const X_SESSION = node.security.tokens['x-session-jwt'];
 
+    const X_DEVICE = node.security.tokens['x-device-jwt'];
     if (req.headers[X_DEVICE.header]) res.setHeader(X_DEVICE.header, req.headers[X_DEVICE.header])
+
+    const X_SESSION = node.security.tokens['x-session-jwt'];
     if (req.headers[X_SESSION.header]) res.setHeader(X_SESSION.header, req.headers[X_SESSION.header])
 
     if (req.headers) {
@@ -24,7 +25,8 @@ module.exports =  function middleware_prepareHeader({ req, res, next }) {
         }
     }
     else {
-        console.log('pas de header')
+        res.send({error: 'Unauthorized Header Access'});
+        res.end();
     }
 }
 
