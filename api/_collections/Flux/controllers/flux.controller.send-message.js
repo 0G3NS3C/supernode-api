@@ -3,10 +3,7 @@ module.exports = async ({ req , res, next}) => {
     const event = req.body.event;
 
     const returnMessageInError = () => {
-        return req.respond({
-            key: 'status',
-            value: 2
-        })
+        return req.respond({ key: 'status', value: 2 })
     }
 
     if (!flux || !event) return returnMessageInError();
@@ -14,6 +11,14 @@ module.exports = async ({ req , res, next}) => {
     if (!Flux) return returnMessageInError();
     const regex = new RegExp('^[\\w-_.]{32}$');
     if (!regex.test(event.key)) return returnMessageInError();
+
+    const isOwner = await Flux.isOwner(req.profile.getKey());
+    if (!isOwner) {
+        const isClient = await Flux.isClient(req.profile.getKey());
+        if (!isClient) {
+          return  returnMessageInError()
+        }
+    }
 
     event.timestamp = Date.now();
     event.originId = req.profile.getKey();

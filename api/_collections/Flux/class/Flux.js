@@ -116,6 +116,21 @@ class Flux extends CollectionClass {
             return flux;
         }
 
+        this.isOwner = async function(ProfileKey) {
+            console.log('IS OWNER');
+            await document.populate('owner');
+            if (document.owner.key === ProfileKey) return true;
+            else return
+        }   
+
+        this.isClient = async function(ProfileKey) {
+            await document.populate('clients','key');
+            for (let client of document.clients) {
+                if (client.key === ProfileKey) return true;
+            }
+            return false;
+        }   
+
         this.save = async function() {
             try {
                 if (document.invite_key === 'null' ||document.invite_key === '{}')  document.invite_key = 'null';

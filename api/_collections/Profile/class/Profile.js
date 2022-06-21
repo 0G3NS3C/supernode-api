@@ -42,7 +42,7 @@ class Profile extends CollectionClass {
                 flux.mk = await node.collections.flux.manager.decodeMasterkey(flux.mk)
                 try {
                     profileToSend.fluxes[i].owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
-                    profileToSend.fluxes[i].owner.online = OGS.$Sockets._isOnlineProfile(flux.owner.key);
+                    profileToSend.fluxes[i].owner.online = node.sockets._isOnlineProfile(flux.owner.key);
                     console.log('user online');
                     console.log(profileToSend.fluxes[i].owner.online);
                     for (let e in flux.clients) {
