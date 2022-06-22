@@ -97,7 +97,7 @@ class Flux extends CollectionClass {
             await document.populate('clients.user', 'nickname');
             let flux = this.getObject();
             flux.owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
-            flux.owner.online = node.sockets._isOnlineProfile(flux.owner.key);
+            flux.owner.online = node.sockets.getByIndex('profileKey',flux.owner.key);
             for (let e in flux.clients) {
                 let client = flux.clients[e];
                 if (client.user && client.user.nickname) {
