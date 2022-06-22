@@ -7,8 +7,6 @@ module.exports = async ({ req , res, next}) => {
     await Flux.eject(req.profile);
     await Flux.reinitialisation();
 
-    const socket = await node.sockets.getByIndex('profileKey', req.profile.getKey());
-
     for (let client of clients) {
         let socketclient = await node.sockets.getByIndex('profileKey', client.key);
         if (socketclient) {
