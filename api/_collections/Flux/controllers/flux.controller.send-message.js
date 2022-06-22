@@ -14,10 +14,8 @@ module.exports = async ({ req , res, next}) => {
 
     const isOwner = await Flux.isOwner(req.profile.getKey());
     if (!isOwner) {
-                    console.log('!isowner');
         const isClient = await Flux.isClient(req.profile.getKey());
         if (!isClient) {
-            console.log('!isclient');
           return returnMessageInError()
         }
     }
