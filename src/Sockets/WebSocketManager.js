@@ -20,12 +20,10 @@ const WebSocketManager = {
         })
 
         WSSERVER.on('connection', function connection(socket, req) {
-            CONSOLE.DEFAULT('##> SOCKET Connected. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
-            socket.id = uuidv4();
-            RAM_SOCKETID[socket.id] = socket;
+            CONSOLE.DEFAULT('##> SOCKET Connected. Total : -> \x1b[32m' + Object.keys(WSSERVER.clients).length + ' \x1b[37m')
 
+            socket.id = uuidv4();
             socket.rooms = [];
-            console.log(WSSERVER.clients);
             socket._send = (data) => {
                 CONSOLE.DEFAULT('##> Socket [' + socket.id + '] OUT -> \x1b[32m ' + data.type + ' \x1b[37m');
                 try {
@@ -40,20 +38,27 @@ const WebSocketManager = {
             //Socket Rooms
 
             socket.join = (room = null) => {
-                WebSocketManager._joinRoom(socket, room);
+                if (!socket.rooms.includes(room)) {
+                    socket.rooms.push(room);
+                }
             }
             socket.leave = (room = null) => {
-                WebSocketManager._leaveRoom(socket, room)
+                sockets.rooms = sockets.rooms.filter((r) => (r !== room));
             }
 
             socket.isIn = (room) => {
-                return WebSocketManager._isIn(socket, room);
+                return socket.rooms.includes(room);
             }
 
-            socket.broadcast = (room, message, callback = null) => {
-                const broadcastedUntilOrigin = WebSocketManager._broadcast(socket, room, message);
-                if (callback) callback(broadcastedUntilOrigin);
-                else return broadcastedUntilOrigin;
+            socket.broadcast = (room, data, callback = null) => {
+                let broadcasted = 0;
+                WSSERVER.clients.forEach((client) => {
+                    if (client.rooms.includes(room) && client.id !== socket.id) {
+                        client._send(data);
+                        broadcasted++;
+                    }
+                })
+                if (callback) callback(broadcasted);
             }
             socket.on('message', function(message) {
                 try {
@@ -67,7 +72,16 @@ const WebSocketManager = {
             })
 
             socket.on('close', function (close) {
-                WebSocketManager._broadcastDisconnect(socket);
+                for (let room in socket.rooms) {
+                    socket.broadcast(room, {
+                        type: 'userStatus',
+                        data: {
+                            flux: room,
+                            profile: socket.auth.profileKey,
+                            status: false,
+                        }
+                    })
+                }
                 WebSocketManager.unregisterSocket(socket);
                 CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
             })
@@ -77,7 +91,6 @@ const WebSocketManager = {
         return this;
     },
     registerSocket(socket, auth) {
-        RAM_SOCKETID[socket.id] = socket;
         for (let e in auth) {
             if (!RAM_INDEXES[e]) RAM_INDEXES[e] = {};
             RAM_INDEXES[e][auth[e]] = socket;
@@ -90,8 +103,6 @@ const WebSocketManager = {
         for (let e in socket.auth) {
             if (RAM_INDEXES[e] && RAM_INDEXES[e][socket.auth[e]]) delete RAM_INDEXES[e][socket.auth[e]];
         }
-        this.cleanFromRooms(socket);
-        delete RAM_SOCKETID[socket.id];
         socket.close();
     },
 
@@ -103,69 +114,6 @@ const WebSocketManager = {
     cleanFromRooms(socket) {
         for (let room in RAM_ROOMS) {
             RAM_ROOMS[room] = RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
-        }
-    },
-
-    _broadcastDisconnect(socket) {
-        for (let room in socket.rooms) {
-            console.log('BROAD DISCONNECT IN '+socket.rooms[room]);
-            this._broadcast(socket, socket.rooms[room],
-                {
-                    type: 'userStatus',
-                    data: {
-                        flux: socket.rooms[room],
-                        profile: socket.auth.profileKey,
-                        status: false,
-                    }
-                });
-        }
-    },
-
-    _joinRoom(socket, room) {
-        if (!room || socket.rooms.includes(room)) return;
-        socket.rooms.push(room);
-        console.log(socket.rooms);
-        if (!RAM_ROOMS[room]) RAM_ROOMS[room] = [];
-        RAM_ROOMS[room].push(socket);
-    }
-    ,
-    _leaveRoom(socket, room) {
-        if (!room || !socket.rooms.includes(room)) return;
-        socket.rooms = socket.rooms.filter((e) => e !== room);
-        RAM_ROOMS[room] = RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
-    }
-    ,
-
-    _isIn(socket, room) {
-        if (RAM_ROOMS[room]) {
-            for (let client of RAM_ROOMS[room]) {
-                if (client.id === socket.id) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-    ,
-    _broadcast(socket = null, room, data) {
-        if (RAM_ROOMS[room]) {
-            CONSOLE.DEFAULT('##> Broadcast ' + socket ? socket.id : 'all' + '] OUT -> \x1b[32m ' + room + ' \x1b[37m');
-            if (!RAM_ROOMS[room].length || RAM_ROOMS[room].length === 1) {
-                return false;
-            }
-            for (let client of RAM_ROOMS[room]) {
-                if (socket) {
-                    if (client.id !== socket.id) {
-                        client._send(data)
-                    }
-                } else {
-                    client._send(data)
-                }
-            }
-            return true;
-        } else {
-            return false
         }
     }
 }

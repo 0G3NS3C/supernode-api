@@ -11,12 +11,12 @@ module.exports = async ({ req , res, next }) => {
             socket.join(Flux.getKey());
         }
 
-        node.sockets._broadcast(socket, Flux.getKey(),
-            {
+        socket.broadcast(Flux.getKey(),  {
                 type: 'fluxUpdate',
                 data: await Flux.getObjectToSend(),
         })
-        node.sockets._broadcast(socket, Flux.getKey(),
+
+        socket.broadcast(Flux.getKey(),
             {
                 type: 'receiveNotification',
                 data: {

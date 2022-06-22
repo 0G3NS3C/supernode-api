@@ -81,7 +81,7 @@ class Flux extends CollectionClass {
 
         this.reinitialisation = async function() {
             console.log('FLUX REINIT');
-            document.invite_key = node.services.utils.randomToken(8).toUpperCase();
+            document.invite_key = await node.collections.flux.Manager.createInviteKey();
             let masterkey = node.collections.flux.manager.createMasterkey();
             masterkey = await node.collections.flux.manager.encodeMasterkey(masterkey);
             document.masterkey = masterkey;

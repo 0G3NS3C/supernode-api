@@ -32,7 +32,7 @@ class Profile extends CollectionClass {
             if (profileToSend.fluxes.length) {
                 await document.populate('fluxes');
                 await document.populate('fluxes.owner', 'user key');
-                await document.populate('fluxes.owner.user', 'nickname')
+                await document.populate('fluxes.owner.user', 'nickname');
                 await document.populate('fluxes.clients', 'key timestamp_create user');
                 await document.populate('fluxes.clients.user', 'nickname');
             }
