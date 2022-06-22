@@ -7,7 +7,7 @@ module.exports = function (manager) {
         let flux = {
             type: manager.TYPES.BIDIRECTIONAL,
             owner: profile.getID(),
-            invite_key: node.services.utils.randomToken(8).toUpperCase(),
+            invite_key: await manager.createInviteKey(),
             key: node.services.utils.randomToken(manager.OPTIONS.KEYLENGTH),
             mk: masterkey,
             options: {

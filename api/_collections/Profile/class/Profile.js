@@ -40,11 +40,10 @@ class Profile extends CollectionClass {
             for (let i in profileToSend.fluxes) {
                 let flux = profileToSend.fluxes[i];
                 flux.mk = await node.collections.flux.manager.decodeMasterkey(flux.mk)
+                if (flux.invite_key) flux.invite_key = await node.collections.flux.manager.decodeInviteKey(flux.invite_key);
                 try {
                     profileToSend.fluxes[i].owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
                     profileToSend.fluxes[i].owner.online = node.sockets.getByIndex('profileKey',flux.owner.key);
-                    console.log('user online');
-                    console.log(profileToSend.fluxes[i].owner.online);
                     for (let e in flux.clients) {
                         let client = flux.clients[e];
                         if (client.user && client.user.nickname) {

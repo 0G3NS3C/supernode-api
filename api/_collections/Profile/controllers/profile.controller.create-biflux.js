@@ -8,7 +8,7 @@ module.exports = async ({ req, res, next }) => {
     if (flux) {
         await req.profile.addFlux(flux);
         let profileToSend = await req.profile.getObjectToSend();
-        let socket = node.sockets._getByProfile(req.profile);
+        let socket = node.sockets.getByIndex('profilKey',req.profile.getKey());
         if (socket) {
             socket.join(flux.getKey());
         }

@@ -25,7 +25,7 @@ const WebSocketManager = {
             RAM_SOCKETID[socket.id] = socket;
 
             socket.rooms = [];
-
+            console.log(WSSERVER.clients);
             socket._send = (data) => {
                 CONSOLE.DEFAULT('##> Socket [' + socket.id + '] OUT -> \x1b[32m ' + data.type + ' \x1b[37m');
                 try {
@@ -90,8 +90,8 @@ const WebSocketManager = {
         for (let e in socket.auth) {
             if (RAM_INDEXES[e] && RAM_INDEXES[e][socket.auth[e]]) delete RAM_INDEXES[e][socket.auth[e]];
         }
+        this.cleanFromRooms(socket);
         delete RAM_SOCKETID[socket.id];
-        this.cleanFromRooms(socket.id);
         socket.close();
     },
 
@@ -101,7 +101,9 @@ const WebSocketManager = {
     },
 
     cleanFromRooms(socket) {
-        for (let room in RAM_ROOMS) RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
+        for (let room in RAM_ROOMS) {
+            RAM_ROOMS[room] = RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
+        }
     },
 
     _broadcastDisconnect(socket) {
