@@ -28,7 +28,7 @@ module.exports = async ({ req , res, next}) => {
     Event.status = 4;
     await Flux.save();
 
-    const socket = node.sockets._getByProfile(req.profile);
+    const socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
     if (socket) {
         socket.broadcast(flux, {
             type: 'receiveMessage',

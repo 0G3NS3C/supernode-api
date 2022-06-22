@@ -6,7 +6,7 @@ module.exports = async ({ req , res, next }) => {
         await Flux.deleteInviteKey();
         await Flux.addClient(req.profile);
         await req.profile.addFlux(Flux);
-        let socket = node.sockets._getByProfile(req.profile);
+        let socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
         if (socket) {
             socket.join(Flux.getKey());
         }

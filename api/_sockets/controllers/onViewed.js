@@ -1,6 +1,6 @@
 module.exports = async (socket, req, data) => {
     console.log('ITS SOCKET SET VIEWED FUNCTION');
-    if (socket.isAuth()) {
+    if (socket.auth) {
         console.log('je suis auth')
         if (!data || !data.event || !data.flux) return false;
         const event = data.event;

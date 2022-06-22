@@ -15,23 +15,25 @@ module.exports = async (socket, req, data) => {
     if (!data.xdevice || !data.xsession) return deleteSocketAuth();
 
     const xsession = node.services.crypter.JWT.DECODE(X_SESSION.key, data.xsession);
+    const xsessionExist = await node.collections.session.manager.findByKey(xsession);
+    if (!xsessionExist) return deleteSocketAuth();
     if (xsession.device !== data.xdevice) return deleteSocketAuth();
     let user = await node.collections.user.manager.findBySession(xsession);
     if (!user) return deleteSocketAuth();
     let profile = await node.collections.profile.manager.findByUser(user);
     if (!profile) return deleteSocketAuth();
+
     let auth = {
         socketId: socket.id,
         userId: xsession.userId,
         profileKey: profile.getKey(),
     }
-    node.sockets._cleanSocket(auth);
-    node.sockets._registerSocket(socket, auth);
-    socket.profile = profile;
-    socket.user = user;
-    socket.auth = node.services.crypter.JWT.ENCODE(X_AUTH.key, auth)
+
+    node.sockets.registerSocket(socket, auth);
+
+
     socket._send({
         type: 'setAuth',
-        data: socket.auth,
+        data: auth,
     })
 }

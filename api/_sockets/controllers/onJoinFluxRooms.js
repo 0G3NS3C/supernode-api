@@ -1,8 +1,9 @@
 module.exports = async (socket, req, data) => {
         console.log('ITS FLUX JOIN ROOOM FUNCITON');
-        if (socket.isAuth()) {
+        if (socket.auth) {
                 console.log('je suis auth')
-                let profile = await socket.profile.getObjectToSend();
+                let profile = await node.collections.profile.manager.findByKey(socket.auth.profileKey);
+                profile = await profile.getObjectToSend();
                 console.log('SOCKET JOIN ROOM : ');
                 profile.fluxes.forEach((flux) => {
                         console.log(flux.key);
@@ -11,7 +12,7 @@ module.exports = async (socket, req, data) => {
                                 type: 'userStatus',
                                 data: {
                                         flux: flux.key,
-                                        profile: socket.profile.getKey(),
+                                        profile: socket.auth.profileKey,
                                         status: true,
                                 }
                         })

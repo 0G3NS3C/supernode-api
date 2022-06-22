@@ -58,7 +58,7 @@ class Flux extends CollectionClass {
             await document.populate('clients', 'key');
 
             if (document.owner.key === askerProfile.getKey()) {
-                if (this.getType() === OGS.$Collections.flux.manager.TYPES.BIDIRECTIONAL) {
+                if (this.getType() === node.collections.flux.manager.TYPES.BIDIRECTIONAL) {
                     for (let client of document.clients) {
                         const profile = await node.collections.profile.manager.findByKey(client.key);
                         if (profile) {
@@ -80,15 +80,14 @@ class Flux extends CollectionClass {
         }
 
         this.reinitialisation = async function() {
-            document.invite_key = node.services.utils.randomToken(4)+'-'+node.services.utils.randomToken(4)+'-'+node.services.utils.randomToken(4)
+            console.log('FLUX REINIT');
+            document.invite_key = node.services.utils.randomToken(8).toUpperCase();
             let masterkey = node.collections.flux.manager.createMasterkey();
             masterkey = await node.collections.flux.manager.encodeMasterkey(masterkey);
-            masterkey = node.services.crypter.INTERNAL.ENCODE(node.collections.flux.manager.SECRET.DB_FLUX,masterkey)
-            masterkey = node.services.crypter.B64.ENCODE(masterkey);
             document.masterkey = masterkey;
             this.decodedMK = false;
-
-            console.log(document.invite_key);
+            await this.save();
+            return true;
         }
 
         this.getObjectToSend = async function() {
@@ -97,15 +96,15 @@ class Flux extends CollectionClass {
             await document.populate('clients', 'key timestamp_create user');
             await document.populate('clients.user', 'nickname');
             let flux = this.getObject();
-           // flux.owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
+            flux.owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
             flux.owner.online = node.sockets._isOnlineProfile(flux.owner.key);
             for (let e in flux.clients) {
                 let client = flux.clients[e];
                 if (client.user && client.user.nickname) {
                     if (client.user.nickname) {
-                      //  flux.clients[e].user.nickname = await node.collections.user.manager.decodeIndex(client.user.nickname);
+                        flux.clients[e].user.nickname = await node.collections.user.manager.decodeIndex(client.user.nickname);
                     }
-                    flux.clients[e].online = node.sockets._isOnlineProfile(client.key);
+                    flux.clients[e].online = node.sockets.getByIndex('profileKey',client.key);
                 }
             }
            if (!this.decodedMK) {
@@ -130,6 +129,11 @@ class Flux extends CollectionClass {
             }
             return false;
         }   
+
+        this.getClient = async function() {
+            await document.populate('clients');
+            return [...document.clients];
+        }
 
         this.save = async function() {
             try {

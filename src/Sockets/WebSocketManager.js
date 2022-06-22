@@ -5,7 +5,7 @@ const {CONSOLE} = require('../server/utils.js');
 //const SocketCloud = require('./SocketCloud.js');
 
 let RAM_SOCKETID = {};
-let RAM_PROFILEID = {};
+let RAM_INDEXES = {};
 let RAM_ROOMS = {};
 ///------
 
@@ -20,14 +20,12 @@ const WebSocketManager = {
         })
 
         WSSERVER.on('connection', function connection(socket, req) {
-
+            CONSOLE.DEFAULT('##> SOCKET Connected. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
             socket.id = uuidv4();
             RAM_SOCKETID[socket.id] = socket;
 
             socket.rooms = [];
-            socket.isAuth = () => {
-                return WebSocketManager._isAuth(socket);
-            }
+
             socket._send = (data) => {
                 CONSOLE.DEFAULT('##> Socket [' + socket.id + '] OUT -> \x1b[32m ' + data.type + ' \x1b[37m');
                 try {
@@ -68,37 +66,44 @@ const WebSocketManager = {
                 if (CONTROLLERS[message.type]) CONTROLLERS[message.type](socket, req, message.data);
             })
 
-                socket.on('close', function (close) {
-                    WebSocketManager._broadcastDisconnect(socket);
-                    WebSocketManager._unregisterSocket(socket);
-                    CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
-                })
+            socket.on('close', function (close) {
+                WebSocketManager._broadcastDisconnect(socket);
+                WebSocketManager.unregisterSocket(socket);
+                CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
+            })
 
         })
 
         return this;
     },
-
-        _registerSocket(socket, auth) {
-        RAM_PROFILEID[auth.profileKey] = socket;
-    },
-    _cleanSocket(auth) {
-        let socket = RAM_PROFILEID[auth.profileKey] || null;
-        if (socket) {
-            this._unregisterSocket(socket);
-            socket.close();
-            if (RAM_SOCKETID[auth.socketId]) delete RAM_SOCKETID[auth.socketId];
+    registerSocket(socket, auth) {
+        RAM_SOCKETID[socket.id] = socket;
+        for (let e in auth) {
+            if (!RAM_INDEXES[e]) RAM_INDEXES[e] = {};
+            RAM_INDEXES[e][auth[e]] = socket;
         }
+        socket.auth = auth;
+        CONSOLE.DEFAULT('##> SOCKET AUTH. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
     },
-    _unregisterSocket(socket) {
-        for (let key in RAM_ROOMS) {
-            RAM_ROOMS[key] = RAM_ROOMS[key].filter((e) => (e.id !== socket.id))
+
+    unregisterSocket(socket) {
+        for (let e in socket.auth) {
+            if (RAM_INDEXES[e] && RAM_INDEXES[e][socket.auth[e]]) delete RAM_INDEXES[e][socket.auth[e]];
         }
         delete RAM_SOCKETID[socket.id];
-        if (socket.auth) delete RAM_PROFILEID[socket.auth.profileKey];
-        if (socket.profile) delete RAM_PROFILEID[socket.profile.getKey()];
-
+        this.cleanFromRooms(socket.id);
+        socket.close();
     },
+
+    getByIndex(index, key) {
+        if (RAM_INDEXES[index] && RAM_INDEXES[index][key]) return RAM_INDEXES[index][key];
+        else return false;
+    },
+
+    cleanFromRooms(socket) {
+        for (let room in RAM_ROOMS) RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
+    },
+
     _broadcastDisconnect(socket) {
         for (let room in socket.rooms) {
             console.log('BROAD DISCONNECT IN '+socket.rooms[room]);
@@ -107,21 +112,13 @@ const WebSocketManager = {
                     type: 'userStatus',
                     data: {
                         flux: socket.rooms[room],
-                        profile: socket.profile.getKey(),
+                        profile: socket.auth.profileKey,
                         status: false,
                     }
                 });
         }
     },
-    _isAuth(socket) {
-        if (!socket.auth) return false;
-        const X_AUTH = node.security.tokens['socket-auth-jwt'];
-        let authDecoded = node.services.crypter.JWT.DECODE(X_AUTH.key, socket.auth);
-        if (!authDecoded) return false;
-        if (authDecoded.socketId !== socket.id) return false;
-        return true;
-    }
-    ,
+
     _joinRoom(socket, room) {
         if (!room || socket.rooms.includes(room)) return;
         socket.rooms.push(room);
@@ -145,19 +142,6 @@ const WebSocketManager = {
                 }
             }
             return false;
-        }
-        return false;
-    }
-    ,
-
-    _isOnlineProfile(profileKey) {
-        if (RAM_PROFILEID[profileKey]) return true;
-        else return false;
-    }
-    ,
-    _getByProfile(profile) {
-        if (RAM_PROFILEID[profile.getKey()]) {
-            return RAM_PROFILEID[profile.getKey()]
         }
         return false;
     }

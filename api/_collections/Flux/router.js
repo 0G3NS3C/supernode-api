@@ -9,4 +9,14 @@ module.exports =[
 			xhr: true,
 		}
 	},
+	{
+		name: 'fluxEject',
+		method: 'POST',
+		path: '/eject',
+		controller: 'flux.eject',
+		middlewares: ['root.checkDevice', 'root.checkSession', 'user.attach', 'profile.attach'],
+		access: {
+			xhr: true,
+		}
+	},
 ]
