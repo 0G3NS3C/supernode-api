@@ -20,7 +20,7 @@ const WebSocketManager = {
         })
 
         WSSERVER.on('connection', function connection(socket, req) {
-            CONSOLE.DEFAULT('##> SOCKET Connected. Total : -> \x1b[32m' + Object.keys(WSSERVER.clients).length + ' \x1b[37m')
+            CONSOLE.DEFAULT('##> SOCKET Connected. Total : -> \x1b[32m' + WSSERVER.clients.length + ' \x1b[37m')
 
             socket.id = uuidv4();
             socket.rooms = [];
@@ -83,7 +83,7 @@ const WebSocketManager = {
                     })
                 }
                 WebSocketManager.unregisterSocket(socket);
-                CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + Object.keys(RAM_SOCKETID).length + ' \x1b[37m')
+                CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + WSSERVER.clients.length + ' \x1b[37m')
             })
 
         })

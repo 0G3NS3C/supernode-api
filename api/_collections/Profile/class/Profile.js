@@ -82,10 +82,9 @@ class Profile extends CollectionClass {
 
         this.setAllEventsReceived = async function() {
             await document.populate('fluxes');
-            console.log('FOR ALL EVENT');
             for (let flux in document.fluxes) {
                 let Flux = await node.collections.flux.manager.findByKey(document.fluxes[flux].key);
-                Flux.setAllEventsReceivedForProfile(this.getKey())
+                await Flux.setAllEventsReceivedForProfile(this.getKey())
                 await Flux.save();
             }
             return true;
