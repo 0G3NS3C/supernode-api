@@ -58,7 +58,7 @@ class Flux extends CollectionClass {
             await document.populate('clients', 'key');
 
             if (document.owner.key === askerProfile.getKey()) {
-                if (this.getType() === node.collections.flux.manager.TYPES.BIDIRECTIONAL) {
+                if (await this.getType() === node.collections.flux.manager.TYPES.BIDIRECTIONAL) {
                     for (let client of document.clients) {
                         const profile = await node.collections.profile.manager.findByKey(client.key);
                         if (profile) {
@@ -95,7 +95,7 @@ class Flux extends CollectionClass {
             await document.populate('owner.user', 'nickname')
             await document.populate('clients', 'key timestamp_create user');
             await document.populate('clients.user', 'nickname');
-            let flux = this.getObject();
+            let flux = await this.getObject();
             flux.owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
             flux.owner.online = node.sockets.getByIndex('profileKey',flux.owner.key);
             if (flux.invite_key) flux.invite_key = await node.collections.flux.manager.decodeInviteKey(flux.invite_key);
@@ -131,9 +131,9 @@ class Flux extends CollectionClass {
             return false;
         }   
 
-        this.getClient = async function() {
+        this.getClients = async function() {
             await document.populate('clients');
-            return [...document.clients];
+            return document.clients;
         }
 
         this.save = async function() {

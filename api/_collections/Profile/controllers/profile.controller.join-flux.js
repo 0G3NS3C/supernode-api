@@ -6,25 +6,29 @@ module.exports = async ({ req , res, next }) => {
         await Flux.deleteInviteKey();
         await Flux.addClient(req.profile);
         await req.profile.addFlux(Flux);
+
+        FluxSend = await Flux.getObjectToSend();
+        console.log('flux send : ')
+        console.log(FluxSend);
         let socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
-        if (socket) {
+
+        if (socket)  {  
             socket.join(Flux.getKey());
-        }
-
-        socket.broadcast(Flux.getKey(),  {
-                type: 'fluxUpdate',
-                data: await Flux.getObjectToSend(),
-        })
-
-        socket.broadcast(Flux.getKey(),
-            {
-                type: 'receiveNotification',
-                data: {
-                    type: 'biFluxJoin',
-                    data: null,
-                }
+            socket.broadcast(Flux.getKey(),  {
+                    type: 'fluxUpdate',
+                    data: FluxSend,
             })
-        return req.respond(await req.profile.getObjectToSend());
+            socket.broadcast(Flux.getKey(),
+                {
+                    type: 'receiveNotification',
+                    data: {
+                        type: 'biFluxJoin',
+                        data: null,
+                    }
+            })
+        }
+        let ProfileReturn = await req.profile.getObjectToSend();
+        return req.respond(ProfileReturn);
     }
     else {
         req.response.add_error('flux',req.print('flux.invalid_code'))

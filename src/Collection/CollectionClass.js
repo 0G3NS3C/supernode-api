@@ -25,15 +25,15 @@ class CollectionClass  {
                         }
                 })
 
-                this.getObject = function() {
+                this.getObject = async function() {
                         let obj = {};
-                        Object.keys(schema).forEach((index) => {
+                        for (let index in schema) {
                              if (index === '_id')  obj[index] = this['getID']();
                              else if (this['get'+capitalizeFirstLetter(index)]) {
-                                     obj[index] = this['get'+capitalizeFirstLetter(index)]();
+                                     obj[index] = await this['get'+capitalizeFirstLetter(index)]();
                              }
                              else { obj[index] = document[index]; }
-                        })
+                        }
                         return obj;
                 }
                 this.getDocumentModel = function() {

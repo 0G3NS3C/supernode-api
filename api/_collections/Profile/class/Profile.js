@@ -26,7 +26,7 @@ class Profile extends CollectionClass {
         }
 
         this.getObjectToSend = async function () {
-            let profile = this.getObject();
+            let profile = await this.getObject();
             const {userKey, ...profileToSend} = {...profile};
             await document.populate('user');
             if (profileToSend.fluxes.length) {
@@ -70,7 +70,7 @@ class Profile extends CollectionClass {
             const object = await this.getObjectToSend();
             let proprietary = [];
             object.fluxes.forEach((flux) => {
-                if (flux.owner._id.equals(this.getID()) && flux.invite_key !== 'null') proprietary.push(flux);
+                if (flux.owner._id.equals(this.getID()) && flux.invite_key) proprietary.push(flux);
             })
             return proprietary;
         }
