@@ -41,10 +41,10 @@ class CollectionClass  {
                 }
                 this.save = async function() {
 
-                        clearTimeout(timeoutSave);
-                        let _t = this;
-                        timeoutSave = setTimeout(function() {
-                                document.save().then((status) => {
+                        // clearTimeout(timeoutSave);
+                        // let _t = this;
+                        // timeoutSave = setTimeout(function() {
+                        await document.save().then((status) => {
                                         if (!status) {
                                                 console.log('CollectionClass NOT saved .');
                                         }
@@ -53,7 +53,7 @@ class CollectionClass  {
                                         }
 
                                 })
-                        },timeoutTime)
+                        // },timeoutTime)
 
                 }
 

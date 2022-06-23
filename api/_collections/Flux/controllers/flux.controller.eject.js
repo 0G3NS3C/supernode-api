@@ -11,14 +11,8 @@ module.exports = async ({ req , res, next}) => {
     await Flux.eject(req.profile);
     await Flux.reinitialisation();
 
-    console.log('owner');
-    console.log(owner);
-    console.log('clients');
 
-    console.log(clients);
     if (isOwner) {
-            console.log('CLIENTS :::');
-            console.log(clients);
         for (let client of clients) {
             let socketclient = await node.sockets.getByIndex('profileKey', client.key);
             if (socketclient) {
