@@ -7,16 +7,18 @@ module.exports = async ({ req , res, next }) => {
         await Flux.addClient(req.profile);
         await req.profile.addFlux(Flux);
 
-        FluxSend = await Flux.getObjectToSend();
+        //let FluxSend = await node.Flux.getObjectToSend();
+
+        let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), req.profile);
         console.log('flux send : ')
-        console.log(FluxSend);
+        console.log(fluxSend);
         let socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
 
         if (socket)  {  
             socket.join(Flux.getKey());
             socket.broadcast(Flux.getKey(),  {
                     type: 'fluxUpdate',
-                    data: FluxSend,
+                    data: fluxSend,
             })
             socket.broadcast(Flux.getKey(),
                 {
@@ -27,9 +29,7 @@ module.exports = async ({ req , res, next }) => {
                     }
             })
         }
-        let profileReturn = await node.collections.profile.manager.getBase(req.profile);
-            profileReturn = await node.collections.profile.manager.decodeBase(profileReturn);
-        return req.respond(profileReturn);
+        return req.respond(fluxSend);
     }
     else {
         req.response.add_error('flux',req.print('flux.invalid_code'))

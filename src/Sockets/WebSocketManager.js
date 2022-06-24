@@ -43,7 +43,7 @@ const WebSocketManager = {
                 }
             }
             socket.leave = (room = null) => {
-                sockets.rooms = sockets.rooms.filter((r) => (r !== room));
+                socket.rooms = socket.rooms.filter((r) => (r !== room));
             }
 
             socket.isIn = (room) => {

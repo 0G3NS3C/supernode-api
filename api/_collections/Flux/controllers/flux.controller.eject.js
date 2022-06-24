@@ -8,15 +8,15 @@ module.exports = async ({ req , res, next}) => {
     const owner = await Flux.getOwner();
     const clients = await Flux.getClients();
 
+
+
     await Flux.eject(req.profile);
     await Flux.reinitialisation();
-    const socket = await node.sockets.getByIndex('profileKey', req.profile.getKey());
 
-    if (socket) socket.leave(Flux.getKey())
 
     if (isOwner) {
         for (let client of clients) {
-            let socketclient = await node.sockets.getByIndex('profileKey', client.key);
+            let socketclient = node.sockets.getByIndex('profileKey', client.key);
             if (socketclient) {
                 let profileclient = await node.collections.profile.manager.findByKey(client.key)
                 socketclient._send({
@@ -26,17 +26,22 @@ module.exports = async ({ req , res, next}) => {
                 socketclient.leave(Flux.getKey())
             }
         }
+        let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), req.profile);
+        return req.respond(fluxSend);
     }
     else if (isClient) {
-        let ownerclient = await node.sockets.getByIndex('profileKey', owner.key);
+        const socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
+        if (socket) socket.leave(Flux.getKey())
+        let ownerclient = node.sockets.getByIndex('profileKey', owner.key);
             if (ownerclient) {
-                let profileowner = await node.collections.profile.manager.findByKey(owner.key)
+                let ProfileOwner = await node.collections.profile.manager.findByKey(owner.key);
+                let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), ProfileOwner)
                 ownerclient._send({
                     type: 'updateFlux',
-                    data: await Flux.getObjectToSend(),
+                    data: fluxSend,
                 })
-                ownerclient.leave(Flux.getKey());
             }
+
     }
 
 
