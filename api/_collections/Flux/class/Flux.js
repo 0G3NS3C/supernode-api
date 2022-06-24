@@ -25,13 +25,14 @@ class Flux extends CollectionClass {
             return document.events[document.events.length - 1];
         }
 
-        this.setAllEventsReceivedForProfile = function(profileKey) {
+        this.setAllEventsReceivedForProfile = async function(profileKey) {
             for (let event in document.events) {
                 if ( document.events[event].originId !== profileKey && document.events[event].status < 6) {
                     document.events[event].status = 6
                 }
             }
             document.markModified('events');
+            await this.save();
         }
 
         this.updateEvent = async function(event, key, value) {

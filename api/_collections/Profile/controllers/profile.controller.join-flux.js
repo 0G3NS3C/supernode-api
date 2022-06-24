@@ -27,8 +27,9 @@ module.exports = async ({ req , res, next }) => {
                     }
             })
         }
-        let ProfileReturn = await req.profile.getObjectToSend();
-        return req.respond(ProfileReturn);
+        let profileReturn = await node.collections.profile.manager.getBase(req.profile);
+            profileReturn = await node.collections.profile.manager.decodeBase(profileReturn);
+        return req.respond(profileReturn);
     }
     else {
         req.response.add_error('flux',req.print('flux.invalid_code'))

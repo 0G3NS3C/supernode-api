@@ -10,7 +10,9 @@ module.exports = async ({ req , res, next}) => {
 
     await Flux.eject(req.profile);
     await Flux.reinitialisation();
+    const socket = await node.sockets.getByIndex('profileKey', req.profile.getKey());
 
+    if (socket) socket.leave(Flux.getKey())
 
     if (isOwner) {
         for (let client of clients) {
@@ -18,9 +20,10 @@ module.exports = async ({ req , res, next}) => {
             if (socketclient) {
                 let profileclient = await node.collections.profile.manager.findByKey(client.key)
                 socketclient._send({
-                    type: 'setBase',
-                    data: await profileclient.getObjectToSend(),
+                    type: 'deleteFlux',
+                    data: Flux.getKey(),
                 })
+                socketclient.leave(Flux.getKey())
             }
         }
     }
@@ -29,11 +32,12 @@ module.exports = async ({ req , res, next}) => {
             if (ownerclient) {
                 let profileowner = await node.collections.profile.manager.findByKey(owner.key)
                 ownerclient._send({
-                    type: 'setBase',
-                    data: await profileowner.getObjectToSend(),
+                    type: 'updateFlux',
+                    data: await Flux.getObjectToSend(),
                 })
+                ownerclient.leave(Flux.getKey());
             }
     }
 
-    req.respond(await req.profile.getObjectToSend())
+
 }

@@ -4,10 +4,25 @@ class Profile extends CollectionClass {
     constructor(document, schema) {
         super(document, schema)
 
+        this.getFluxes = async function() {
+            await document.populate('fluxes');
+            await document.populate('fluxes.owner', 'user key');
+            await document.populate('fluxes.owner.user', 'nickname');
+            await document.populate('fluxes.clients', 'key timestamp_create user');
+            await document.populate('fluxes.clients.user', 'nickname');
+            return document.fluxes;
+        }
+
+        this.getNickname = async function() {
+            await document.populate('user','nickname');
+            return document.user.nickname;
+        }
+
         this.addFlux = async function (flux) {
             document.fluxes.push(flux.getID())
             document.markModified('fluxes');
             await this.save();
+            return true;
         }
 
         this.removeFlux = async function (flux) {
@@ -25,59 +40,13 @@ class Profile extends CollectionClass {
             return true;
         }
 
-        this.getObjectToSend = async function () {
-            let profile = await this.getObject();
-            const {userKey, ...profileToSend} = {...profile};
-            await document.populate('user');
-            if (profileToSend.fluxes.length) {
-                await document.populate('fluxes');
-                await document.populate('fluxes.owner', 'user key');
-                await document.populate('fluxes.owner.user', 'nickname');
-                await document.populate('fluxes.clients', 'key timestamp_create user');
-                await document.populate('fluxes.clients.user', 'nickname');
-            }
-            profileToSend.fluxes = [...document.fluxes];
-            for (let i in profileToSend.fluxes) {
-                let flux = profileToSend.fluxes[i];
-                flux.mk = await node.collections.flux.manager.decodeMasterkey(flux.mk)
-                if (flux.invite_key) flux.invite_key = await node.collections.flux.manager.decodeInviteKey(flux.invite_key);
-                try {
-                    profileToSend.fluxes[i].owner.user.nickname = await node.collections.user.manager.decodeIndex(flux.owner.user.nickname);
-                    profileToSend.fluxes[i].owner.online = node.sockets.getByIndex('profileKey',flux.owner.key);
-                    for (let e in flux.clients) {
-                        let client = flux.clients[e];
-                        if (client.user && client.user.nickname) {
-                            if (client.user.nickname) {
-                                profileToSend.fluxes[i].clients[e].user.nickname = await node.collections.user.manager.decodeIndex(client.user.nickname);
-                            }
-                            profileToSend.fluxes[i].clients[e].online = node.sockets.getByIndex('profileKey',client.key);
-                        }
-                    }
-                }
-                catch(e) {
-                }
-            }
-
-            profileToSend.id = this.getID();
-            profileToSend.nickname = await node.collections.user.manager.decodeIndex(document.user.nickname);
-            delete profileToSend.user;
-            // console.log('Profile to send :');
-            // console.log(profileToSend);
-            return profileToSend;
-        }
-
         this.getProprietaryFreeFlux = async function () {
-            const object = await this.getObjectToSend();
+            const fluxes = await this.getFluxes();
             let proprietary = [];
-            object.fluxes.forEach((flux) => {
+            fluxes.forEach((flux) => {
                 if (flux.owner._id.equals(this.getID()) && flux.invite_key) proprietary.push(flux);
             })
             return proprietary;
-        }
-
-        this.getAllFluxes = async function() {
-            const object = await this.getObjectToSend();
-            return object.fluxes;
         }
 
         this.setAllEventsReceived = async function() {

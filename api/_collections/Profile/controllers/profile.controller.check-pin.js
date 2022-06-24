@@ -17,11 +17,13 @@ module.exports = async ({ req, res, next }) => {
     //     ));
     //     return ctx.req.respond(false);
     // }
-    let profile = await node.collections.profile.manager.getWithPin(req.user, code);
-    if (profile) {
+    let Profile = await node.collections.profile.manager.getWithPin(req.user, code);
+
+    if (Profile) {
         //OGS.$Services.security.flood.reset('checkCode',[ctx.req.agent.ip, ctx.req.headers[X_DEVICE]]);
-        await profile.setAllEventsReceived()
-        profile = await profile.getObjectToSend();
+        //await node.collections.flux.manager.setAllEventsReceivedForProfile(profile);
+        let profile = await node.collections.profile.manager.getBase(Profile);
+        profile = await node.collections.profile.manager.decodeBase(profile);
         return req.respond(profile);
     }else {
         req.response.add_error('pin',req.print('pin.invalid'));
