@@ -72,7 +72,7 @@ const WebSocketManager = {
             })
 
             socket.on('close', function (close) {
-                for (let room in socket.rooms) {
+                for (let room of socket.rooms) {
                     socket.broadcast(room, {
                         type: 'userStatus',
                         data: {
