@@ -18,9 +18,10 @@ module.exports = async ({ req , res, next}) => {
         for (let client of clients) {
             let socketclient = node.sockets.getByIndex('profileKey', client.key);
             if (socketclient) {
+                console.log('there is socket client');
                 let profileclient = await node.collections.profile.manager.findByKey(client.key)
                 socketclient._send({
-                    type: 'deleteFlux',
+                    type: 'fluxDelete',
                     data: Flux.getKey(),
                 })
                 socketclient.leave(Flux.getKey())
@@ -37,10 +38,12 @@ module.exports = async ({ req , res, next}) => {
                 let ProfileOwner = await node.collections.profile.manager.findByKey(owner.key);
                 let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), ProfileOwner)
                 ownerclient._send({
-                    type: 'updateFlux',
+                    type: 'fluxUpdate',
                     data: fluxSend,
                 })
             }
+        let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), req.profile);
+        return req.respond(Flux.getKey());
 
     }
 
