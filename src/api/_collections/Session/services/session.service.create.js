@@ -13,7 +13,7 @@ module.exports =  async function (User, req, res) {
             userId: User.getID(),
         }
         session = await node.collections.session.manager.create(session);
-        session = node.services.crypter.JWT.ENCODE(X_SESSION.key, session.getObject(), "365d");
+        session = node.services.crypter.JWT.ENCODE(X_SESSION.key, await session.getObject(), "365d");
         res.set(X_SESSION.header, session)
         return true;
     }

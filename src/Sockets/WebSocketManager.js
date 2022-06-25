@@ -53,7 +53,7 @@ const WebSocketManager = {
             socket.broadcast = (room, data, callback = null) => {
                 let broadcasted = 0;
                 WSSERVER.clients.forEach((client) => {
-                    if (client.rooms.includes(room) && client.id !== socket.id) {
+                    if (client.auth && client.rooms.includes(room) && client.id !== socket.id) {
                         client._send(data);
                         broadcasted++;
                     }
