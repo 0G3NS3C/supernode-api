@@ -23,10 +23,11 @@ const SocketsServerFactory = {
             server = createServerHTTP();
         }
 
-        this.disconnectSocket = function (socket) {
-            socket.disconnect();
-        }
         /* Lauching server */
+
+        for (let option of Object.keys(sockets.config.options)) {
+            server[option] = sockets.config.options[option]
+        }
         WSSERVER = new WebSocketServer({server});
         const SocketManager = await WebSocketManager.build(WSSERVER, sockets);
         server.listen(sockets.config.port);
