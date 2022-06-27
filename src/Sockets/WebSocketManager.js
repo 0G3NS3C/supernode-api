@@ -14,6 +14,7 @@ const CONTROLLERS = [];
 const WebSocketManager = {
 
     async build(WSSERVER, sockets) {
+
         let _this = this;
 
         this.getInRoom = function(room) {
@@ -72,6 +73,12 @@ const WebSocketManager = {
                 if (callback) callback(broadcasted);
             }
             socket.on('message', function(message) {
+                socket.isAlive = true;
+                clearTimeout(socket.timeoutAlive);
+                socket.timeoutAlive = setTimeout(() => {
+                    socket.isAlive = false;
+                },60000)
+
                 try {
                     message = JSON.parse(message);
                 } catch (e) {
@@ -98,7 +105,11 @@ const WebSocketManager = {
             })
 
         })
-
+        const interval = setInterval(function ping() {
+          WSSERVER.clients.forEach(function each(ws) {
+            if (ws.isAlive === false) return ws.terminate();
+          });
+        }, 60000);
         return this;
     },
     registerSocket(socket, auth) {

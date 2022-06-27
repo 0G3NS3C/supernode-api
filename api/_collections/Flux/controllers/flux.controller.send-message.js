@@ -13,12 +13,9 @@ module.exports = async ({ req , res, next}) => {
     if (!regex.test(event.key)) return returnMessageInError();
 
     const isOwner = await Flux.isOwner(req.profile.getKey());
-    if (!isOwner) {
-        const isClient = await Flux.isClient(req.profile.getKey());
-        if (!isClient) {
-          return returnMessageInError()
-        }
-    }
+    const isClient = await Flux.isClient(req.profile.getKey());
+    if (!isOwner && !isClient)  return returnMessageInError()
+
 
     event.timestamp = Date.now();
     event.originId = req.profile.getKey();
@@ -26,21 +23,35 @@ module.exports = async ({ req , res, next}) => {
     Event.status = 4;
     await Flux.save();
 
-    const socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
+
 
     const clients = await Flux.getClients();
+    if (isClient) {
+        const owner = await Flux.getOwner();
+        let Profile = await node.collections.profile.manager.findByKey(owner.key);
+        let Socket = node.sockets.getByIndex('profileKey', owner.key);
 
-
+        if (!Socket) node.services.expo.sendNotification(
+            await Profile.getNotificationsTokens(), 
+            await node.collections.user.manager.decodeIndex(await req.profile.getNickname()),
+            'New encrypted message',
+        );
+    }
     for (let client of clients) {
-        if (client.key !== req.profile.getKey()) {
+        if (client.key !== await req.profile.getKey()) {
             let Profile = await node.collections.profile.manager.findByKey(client.key);
             let Socket = node.sockets.getByIndex('profileKey', client.key);
             if (!Socket) {
-                node.services.expo.sendNotification(await Profile.getNotificationsTokens(), 'Quiet', 'Vous avez reçu un nouveau message');
+                node.services.expo.sendNotification(
+                    await Profile.getNotificationsTokens(), 
+                    await node.collections.user.manager.decodeIndex(await req.profile.getNickname()),
+                    'New encrypted message',
+                );
             }
         }
     }
 
+    const socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
     if (socket) {
         socket.broadcast(flux, {
             type: 'receiveMessage',
