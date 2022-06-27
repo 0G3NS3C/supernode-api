@@ -4,9 +4,10 @@ module.exports = {
     idleTimeout: 30000,
     maxBackpressure: 1024,
     maxPayloadLength: 512,
-    keepAlive: {
-      interval: 20000,
-      timeout: 3000,
-    }
+    // keepAlive: {
+    //   interval: 20000,
+    //   timeout: 3000,
+    // }
+    keepAlive: false,
   }
 }

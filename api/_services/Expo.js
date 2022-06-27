@@ -30,5 +30,6 @@ module.exports =  {
          for (let chunk of chunks) {
               await expo.sendPushNotificationsAsync(chunk);
           }
+          return true;
     },
 }
