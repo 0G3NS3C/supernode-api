@@ -59,4 +59,14 @@ module.exports =[
 			xhr: true,
 		}
 	},
+	{
+		name: 'profileSubscriptionPushToken',
+		method: 'POST',
+		path: '/notifications-subscription',
+		controller: 'profile.notifications-subscription',
+		middlewares: ['root.checkDevice', 'root.checkSession', 'user.attach', 'profile.attach'],
+		access: {
+			xhr: true,
+		}
+	},
 ]

@@ -29,6 +29,7 @@ module.exports = {
 		type: Date,
 		default: Date.now()
 	},
+	notificationsTokens: [Object],
 
 };
 

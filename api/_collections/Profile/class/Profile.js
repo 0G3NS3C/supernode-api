@@ -57,6 +57,14 @@ class Profile extends CollectionClass {
                 await Flux.save();
             }
             return true;
+        },
+
+        this.addPushSubscription = async function(tokenToRegister) {
+            for (let token of document.notificationsTokens) {
+                if (token.data === tokenToRegister.data) return false;
+            }
+            document.notificationsTokens.push(tokenToRegister);
+            await this.save();
         }
     }
 }

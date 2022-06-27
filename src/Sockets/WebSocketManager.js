@@ -14,7 +14,18 @@ const CONTROLLERS = [];
 const WebSocketManager = {
 
     async build(WSSERVER, sockets) {
+        let _this = this;
 
+        this.getInRoom = function(room) {
+                let clients = [];
+                WSSERVER.clients.forEach((client) => {
+                    if (client.rooms.includes(room)) {
+                        clients.push(client);
+                    }
+                })
+                return clients;
+        }
+        
         sockets.server.controllers.forEach(async (controller) => {
             CONTROLLERS[controller.name] = await require(controller.path);
         })
@@ -115,6 +126,8 @@ const WebSocketManager = {
         for (let room in RAM_ROOMS) {
             RAM_ROOMS[room] = RAM_ROOMS[room].filter((s) => (s.id !== socket.id));
         }
-    }
+    },
+
+
 }
 module.exports = WebSocketManager;

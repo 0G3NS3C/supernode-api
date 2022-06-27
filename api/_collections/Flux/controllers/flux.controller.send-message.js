@@ -27,6 +27,20 @@ module.exports = async ({ req , res, next}) => {
     await Flux.save();
 
     const socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
+
+    const clients = await Flux.getClients();
+
+
+    for (let client of clients) {
+        if (client.key !== req.profile.getKey()) {
+            let Profile = await node.collections.profile.manager.findByKey(client.key);
+            let Socket = node.sockets.getByIndex('profileKey', client.key);
+            if (!Socket) {
+                node.services.expo.sendNotification(await Profile.getNotificationsTokens(), 'Quiet', 'Vous avez reçu un nouveau message');
+            }
+        }
+    }
+
     if (socket) {
         socket.broadcast(flux, {
             type: 'receiveMessage',
