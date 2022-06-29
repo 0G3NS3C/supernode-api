@@ -31,9 +31,12 @@ module.exports = async (socket, req, data) => {
 
     node.sockets.registerSocket(socket, auth);
 
-
     socket._send({
         type: 'setAuth',
         data: auth,
     })
+
+    socket._send({
+        type: 'ping'
+    });
 }

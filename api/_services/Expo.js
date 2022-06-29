@@ -28,7 +28,12 @@ module.exports =  {
         }
         let chunks = expo.chunkPushNotifications(messages);
          for (let chunk of chunks) {
-              await expo.sendPushNotificationsAsync(chunk);
+             try {
+               await expo.sendPushNotificationsAsync(chunk); 
+             } 
+             catch(e) {
+
+             }
           }
           return true;
     },

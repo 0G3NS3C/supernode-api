@@ -43,7 +43,6 @@ const WebSocketManager = {
                 } catch (e) {
 
                 }
-                console.log(data);
                 socket.send(data)
             }
 
@@ -73,12 +72,6 @@ const WebSocketManager = {
                 if (callback) callback(broadcasted);
             }
             socket.on('message', function(message) {
-                socket.isAlive = true;
-                clearTimeout(socket.timeoutAlive);
-                socket.timeoutAlive = setTimeout(() => {
-                    socket.isAlive = false;
-                },60000)
-
                 try {
                     message = JSON.parse(message);
                 } catch (e) {
@@ -103,13 +96,12 @@ const WebSocketManager = {
                 WebSocketManager.unregisterSocket(socket);
                 CONSOLE.DEFAULT('##> SOCKET Closed. Total : -> \x1b[32m' + WSSERVER.clients.size + ' \x1b[37m')
             })
-
         })
         const interval = setInterval(function ping() {
           WSSERVER.clients.forEach(function each(ws) {
             if (ws.isAlive === false) return ws.terminate();
           });
-        }, 60000);
+        }, 13000);
         return this;
     },
     registerSocket(socket, auth) {
