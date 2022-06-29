@@ -165,8 +165,7 @@ var _call = {
 
 	controllers: function(name,func,{ route = null })  {
 		return async function(req,res,next) {
-			CONSOLE.MSG('Calling controller : \x1b[32m'+name+'\x1b[30m -> ['+req.hostname+']')
-		 	console.log('');
+			CONSOLE.MSG('Calling controller : \x1b[34m'+name+'\x1b[30m -> ['+req.hostname+']')
 			let ctx=bindContext(req,res,next, route );
 			return await func(ctx);
 		}

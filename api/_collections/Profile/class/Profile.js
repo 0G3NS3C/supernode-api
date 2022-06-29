@@ -34,8 +34,6 @@ class Profile extends CollectionClass {
             // });
             document.fluxes.pull({ _id: flux.getID() });
             document.markModified('fluxes');
-            console.log('removing');
-            console.log(document.fluxes);
             await this.save();
             return true;
         }

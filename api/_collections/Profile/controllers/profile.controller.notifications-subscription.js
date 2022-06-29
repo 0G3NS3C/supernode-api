@@ -6,5 +6,4 @@ module.exports = async ({ req , res , next }) => {
     }
     await node.collections.profile.manager.registerSubscriptionPush(req.profile, token);
     return req.respond(true);
-    console.log(token);
 }

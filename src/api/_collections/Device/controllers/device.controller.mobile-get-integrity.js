@@ -20,12 +20,10 @@ module.exports = async ({ req, res, next }) => {
       trustedDevice = await node.collections.device.manager.registerDevice(device);
    }
    if (!trustedDevice) {
-      console.log('untrusted device');
       res.setHeader(X_DEVICE.header, null);
       return req.respond(false);
    }
    else {
-      console.log('trusted device');
       res.setHeader(X_DEVICE.header, trustedDevice.getUniqID())
       return req.respond(true);
    }

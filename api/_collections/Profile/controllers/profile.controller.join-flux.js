@@ -10,8 +10,6 @@ module.exports = async ({ req , res, next }) => {
         //let FluxSend = await node.Flux.getObjectToSend();
 
         let fluxSend = await node.collections.flux.manager.findOneInProfile(Flux.getKey(), req.profile);
-        console.log('flux send : ')
-        console.log(fluxSend);
         let socket = node.sockets.getByIndex('profileKey', req.profile.getKey());
 
         if (socket)  {  

@@ -1,6 +1,5 @@
 module.exports = async (socket, req, data) => {
 
-    console.log('GET AUTH');
     const X_DEVICE = node.security.tokens['x-device-jwt'].header;
     const X_SESSION = node.security.tokens['x-session-jwt'];
     const X_AUTH = node.security.tokens['socket-auth-jwt'];
@@ -11,7 +10,6 @@ module.exports = async (socket, req, data) => {
             data: null,
         })
     }
-    console.log(data);
     if (!data.xdevice || !data.xsession) return deleteSocketAuth();
 
     const xsession = node.services.crypter.JWT.DECODE(X_SESSION.key, data.xsession);

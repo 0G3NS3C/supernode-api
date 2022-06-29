@@ -1,6 +1,7 @@
 var ObjectId = require('mongoose').Types.ObjectId;
 module.exports = function (manager) {
     return async function (user) {
+        //A RETAPER AVEC NOUVELLE API
         let profile = await manager.findOne({ user:new ObjectId(user.getID()) });
 
         //a finir poru ejecter de tout les flux;
@@ -13,8 +14,6 @@ module.exports = function (manager) {
                     await Flux.reinitialisation();
                     await Flux.save();
                     let socket = OGS.$Sockets._getByProfile(profile);
-                    console.log('FLUX TO SEND');
-                    console.log(await Flux.getObjectToSend());
                     if (socket) {
                         socket._send({
                             type: 'fluxUpdate',

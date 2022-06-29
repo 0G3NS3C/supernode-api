@@ -1,6 +1,4 @@
 module.exports = async ({ req, res, next }) => {
-    console.log('CREATE BIFLUX');
-
     const profileFluxes = await req.profile.getProprietaryFreeFlux();
 
     if (profileFluxes.length >= 3) return req.respond(false);

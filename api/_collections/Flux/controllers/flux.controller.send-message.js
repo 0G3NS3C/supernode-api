@@ -18,7 +18,7 @@ module.exports = async ({ req , res, next}) => {
 
 
     event.timestamp = Date.now();
-    event.originId = req.profile.getKey();
+    event.originId = await req.profile.getKey();
     const Event = await Flux.addEventClient(event);
     Event.status = 4;
     await Flux.save();
@@ -69,7 +69,7 @@ module.exports = async ({ req , res, next}) => {
             } else {
                 return req.respond({
                     key: 'status',
-                    value: Event.status,
+                    value: 4,
                 })
             }
             await Flux.save()

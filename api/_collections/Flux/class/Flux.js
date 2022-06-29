@@ -6,7 +6,6 @@ class Flux extends CollectionClass {
         this.decodedMK = false;
         this.addClient = async function (profile) {
             if (!document.clients.find((e) => e === profile.getID())) {
-                console.log('ADDING CLIENT');
                 document.clients.push(profile.getDocumentModel())
                 document.markModified('clients');
                 await this.save();
@@ -47,7 +46,6 @@ class Flux extends CollectionClass {
         }
 
         this.deleteEvent = async function(event) {
-            console.log('=> DELETE EVENT ');
             const events = document.events.filter((e) => e.key !== event.key)
             document.events = events;
             document.markModified('events')
@@ -63,7 +61,6 @@ class Flux extends CollectionClass {
                     for (let client of document.clients) {
                         const profile = await node.collections.profile.manager.findByKey(client.key);
                         if (profile) {
-                            console.log('PROFILE ==================');
                             await profile.removeFlux(this);
                         }
                     }
@@ -81,7 +78,6 @@ class Flux extends CollectionClass {
         }
 
         this.reinitialisation = async function() {
-            console.log('FLUX REINIT');
             document.invite_key = await node.collections.flux.manager.createInviteKey();
             let masterkey = node.collections.flux.manager.createMasterkey();
             masterkey = await node.collections.flux.manager.encodeMasterkey(masterkey);
@@ -126,7 +122,6 @@ class Flux extends CollectionClass {
         this.isClient = async function(ProfileKey) {
             await document.populate('clients','key');
             for (let client of document.clients) {
-                console.log(client.key);
                 if (client.key === ProfileKey) return true;
             }
             return false;

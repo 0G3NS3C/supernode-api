@@ -18,7 +18,6 @@ module.exports = async ({ req , res, next}) => {
         for (let client of clients) {
             let socketclient = node.sockets.getByIndex('profileKey', client.key);
             if (socketclient) {
-                console.log('there is socket client');
                 let profileclient = await node.collections.profile.manager.findByKey(client.key)
                 socketclient._send({
                     type: 'fluxDelete',
