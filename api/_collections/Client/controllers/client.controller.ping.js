@@ -1,4 +1,5 @@
 module.exports = async ({ req, res, next }) => {
+    console.log(node);
         try {
             res.send('pong');    
         } 
