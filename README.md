@@ -1,4 +1,4 @@
-# Quiet Bêta
+# Supernode v1
 
 ## Infos 
 
