@@ -1,7 +1,7 @@
 module.exports = async ({ req, res, next }) => {
-    console.log(node);
+        console.log(node);
         try {
-            res.send('pong');    
+            req.respond('pong');
         } 
         catch(e) { node.services.error.catch(req, e); res.send(false) }
 }

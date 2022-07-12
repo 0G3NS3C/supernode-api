@@ -1,6 +1,6 @@
 module.exports =[
 	{
-		name: 'clientMobilePing',
+		name: 'clientPing',
 		method: 'GET',
 		path: '/ping',
 		controller: 'client.ping',
